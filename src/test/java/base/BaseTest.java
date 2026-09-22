@@ -1,10 +1,4 @@
-package base;
-
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -18,15 +12,19 @@ public abstract class BaseTest {
     @BeforeEach
     void setUp() {
         playwright = Playwright.create();
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
+        // setHeadless(true) es obligatorio para entornos CI/CD sin pantalla
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
 
-        page = browser.newPage();
+        // Inicializamos el contexto explícitamente para que no sea null
+        context = browser.newContext();
+        page = context.newPage();
     }
 
     @AfterEach
     void tearDown() {
-        // Limpieza de recursos al finalizar cada prueba
+        // Cerramos los recursos en orden inverso a su creación
+        if (page != null) page.close();
         if (context != null) context.close();
         if (browser != null) browser.close();
         if (playwright != null) playwright.close();
