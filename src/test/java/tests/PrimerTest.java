@@ -13,7 +13,7 @@ public class PrimerTest extends BaseTest {
     private PO_LoginTheInternet loginPage;
 
     @BeforeEach
-    void setUp(){
+    void initPageObjects(){
         loginPage = new PO_LoginTheInternet(page);
     }
 
