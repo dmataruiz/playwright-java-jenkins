@@ -2,7 +2,7 @@ name: Playwright Java Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "feature/**", "fix/**" ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -46,3 +46,10 @@ jobs:
           name: playwright-results
           path: target/surefire-reports/
           retention-days: 30
+
+      - name: Ejecutar pruebas de Playwright y reportar a Qase
+    env:
+        QASE_ENABLE: true
+        QASE_PROJECT_CODE: PP
+        QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
+    run: mvn clean test -Dqase.enable=true -Dqase.project.domain=PP
