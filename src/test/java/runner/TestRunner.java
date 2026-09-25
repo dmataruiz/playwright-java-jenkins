@@ -12,7 +12,7 @@ import org.testng.annotations.DataProvider;
                 "pretty",
                 "html:target/cucumber-reports/cucumber-pretty.html",
                 "json:target/cucumber-reports/cucumber.json",
-
+                "io.qase.cucumber7.QaseEventListener"
         },
         monochrome = true
 )

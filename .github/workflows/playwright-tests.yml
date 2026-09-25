@@ -48,9 +48,11 @@ jobs:
           retention-days: 30
 
 
-      - name: Ejecutar pruebas y reportar a Qase
+      - name: Run Cucumber Tests with Qase
         env:
-          # Aquí mapeamos el Secret de GitHub hacia la variable que espera tu archivo json o comando
-          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
         run: |
-          mvn clean test -DQASE_MODE=testops
+          mvn test-compile test \
+            -Dqase.mode=report \
+            -Dqase.config.testops.project=PP \
+            -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
