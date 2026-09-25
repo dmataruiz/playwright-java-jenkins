@@ -13,12 +13,24 @@ public class Hooks {
     private static final ThreadLocal<Playwright> playwrightThread = new ThreadLocal<>();
     private static final ThreadLocal<Browser> browserThread = new ThreadLocal<>();
     private static final ThreadLocal<Page> pageThread = new ThreadLocal<>();
+    protected Browser browser;
 
     @Before
     public void setUp() {
         Playwright playwright = Playwright.create();
-        Browser browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(true)
+        // Detecta si estamos ejecutando en un entorno de CI (GitHub Actions)
+        boolean isCI = System.getenv("CI") != null || System.getenv("GITHUB_ACTIONS") != null;
+
+        // Si es CI -> setHeadless(true) | Si es local -> setHeadless(false)
+        boolean runHeadless = isCI;
+
+        System.out.println("Modo de ejecución del navegador (Headless): " + runHeadless);
+
+        browser = playwright.chromium().launch(
+                new BrowserType.LaunchOptions()
+                        .setHeadless(runHeadless)
+                        // Opcional: añade una pausa de 500ms entre acciones solo cuando ejecutes en local
+                        .setSlowMo(isCI ? 0 : 500)
         );
         Page page = browser.newPage();
 
