@@ -48,8 +48,8 @@
 
     <dependency>
         <groupId>io.qase</groupId>
-        <artifactId>qase-testng-reporter</artifactId>
-        <version>4.1.1</version>
+        <artifactId>qase-cucumber-v7-reporter</artifactId>
+        <version>4.1.55</version>
         <scope>test</scope>
     </dependency>
     </dependencies>
