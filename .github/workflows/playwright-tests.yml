@@ -4,8 +4,12 @@ on:
   push:
     branches: [ "main", "feature/**", "fix/**" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
+
+  schedule:
+    # Todos los días a las 02:00 AM UTC
+    - cron: '0 2 * * *'
 
 permissions:
   contents: read
@@ -30,15 +34,49 @@ jobs:
       - name: Instalar navegadores de Playwright
         run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
 
-      - name: Ejecutar pruebas de Playwright con Maven
-        run: mvn clean test
+      # 1. PUSH: Solo ejecuta los escenarios marcados con @Regression
+      - name: Run Regression Tests on Push
+        if: github.event_name == 'push'
+        env:
+          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
+        run: |
+          mvn clean test-compile test \
+            -Dcucumber.filter.tags="@Regression" \
+            -Dqase.mode=report \
+            -Dqase.config.testops.project=PP \
+            -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
+      # 2. MERGE REQUEST (PR): Ejecuta TODO (SauceDemo + TheInternet)
+      - name: Run All Tests (SauceDemo & TheInternet) on Pull Request
+        if: github.event_name == 'pull_request'
+        env:
+          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
+        run: |
+          mvn clean test-compile test \
+            -Dqase.mode=report \
+            -Dqase.config.testops.project=PP \
+            -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
+
+      # 3. NIGHTLY / MANUAL: Ejecuta solo los del feature de Login (@Login)
+      - name: Run Only Login Feature Nightly
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
+        run: |
+          mvn clean test-compile test \
+            -Dcucumber.filter.tags="@Login" \
+            -Dqase.mode=report \
+            -Dqase.config.testops.project=PP \
+            -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
+
+      # Publicar reporte de resultados JUnit en GitHub Actions
       - name: Publicar reporte de resultados JUnit
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
 
+      # Subir artefactos de prueba si hay evidencias
       - name: Subir artefactos de prueba
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,13 +84,3 @@ jobs:
           name: playwright-results
           path: target/surefire-reports/
           retention-days: 30
-
-
-      - name: Run Cucumber Tests with Qase
-        env:
-          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
-        run: |
-          mvn test-compile test \
-            -Dqase.mode=report \
-            -Dqase.config.testops.project=PP \
-            -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
