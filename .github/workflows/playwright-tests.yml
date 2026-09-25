@@ -48,9 +48,9 @@ jobs:
           retention-days: 30
 
 
-      - name: Ejecutar pruebas de Playwright y reportar a Qase
+      - name: Ejecutar pruebas y reportar a Qase
         env:
-          QASE_ENABLE: true
-          QASE_PROJECT_CODE: PP
-          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
-        run: mvn clean test -Dqase.enable=true -Dqase.project.code=PP
+          # Aquí mapeamos el Secret de GitHub hacia la variable que espera tu archivo json o comando
+          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+        run: |
+          mvn clean test -DQASE_MODE=testops

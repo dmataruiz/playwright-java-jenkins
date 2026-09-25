@@ -1,0 +1,10 @@
+{
+  "mode": "testops",
+  "fallback": "local",
+  "testops": {
+    "project": "PP",
+    "api": {
+      "token": "be2b9c250fbbf5a5363940558d755372264c31514b8904461b35a764cfe04f1d"
+    }
+  }
+}
