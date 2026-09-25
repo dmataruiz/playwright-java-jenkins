@@ -5,7 +5,7 @@ Característica: Autenticación en la plataforma The Internet
   Antecedentes:
     Dado que el usuario navega a la página de login de The Internet
 
-  @Smoke @Positive
+  @Smoke @Positive @QaseID=1
   Escenario: Inicio de sesión exitoso con credenciales válidas
     Cuando ingresa el usuario "tomsmith" y la contraseña "SuperSecretPassword!"
     Y hace clic en el botón de login
@@ -18,7 +18,12 @@ Característica: Autenticación en la plataforma The Internet
     Y hace clic en el botón de login
     Entonces debe ver el mensaje de error "<mensaje_error>"
 
-    Ejemplos:
-      | usuario   | password             | mensaje_error           |
-      | usuario_bad| SuperSecretPassword!| Your username is invalid!|
-      | tomsmith  | PasswordIncorrecta   | Your password is invalid!|
+    @QaseID=2
+    Ejemplos: Username incorrecto
+      | usuario  | password             | mensaje_error             |
+      | usertest | SuperSecretPassword! | Your username is invalid! |
+
+    @QaseID=3
+    Ejemplos: Password incorrecta
+      | usuario  | password             | mensaje_error             |
+      | tomsmith | wrongpassword        | Your password is invalid! |
