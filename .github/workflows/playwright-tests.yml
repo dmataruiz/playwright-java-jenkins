@@ -103,7 +103,7 @@ jobs:
       - name: Ejecutar Test de Carga con k6 Action
         uses: grafana/k6-action@v0.3.1
         with:
-          filename: src/test/java/performance/login-performance.js
+          filename: src/performance/login-performance.js
           flags: --out json=k6-results.json
 
       - name: Subir resultados de k6 como artefacto
