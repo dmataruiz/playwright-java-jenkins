@@ -37,8 +37,8 @@ jobs:
       - name: Instalar navegadores de Playwright
         run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
 
-      # 1. PUSH: Solo ejecuta los escenarios marcados con @Regression
-      - name: Run Regression Tests on Push
+      # 1. PUSH: Solo ejecuta los escenarios marcados con @Smoke
+      - name: Run Smoke Tests on Push
         if: github.event_name == 'push'
         env:
           QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
@@ -49,8 +49,8 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 2. MERGE REQUEST (PR): Ejecuta TODO (SauceDemo + TheInternet)
-      - name: Run All Tests (SauceDemo & TheInternet) on Pull Request
+      # 2. MERGE REQUEST (PR): Ejecuta los escenarios marcados con @Regression
+      - name: Run Regression Tests on Pull Request
         if: github.event_name == 'pull_request'
         env:
           QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
@@ -61,8 +61,8 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 3. NIGHTLY / MANUAL: Ejecuta solo los del feature de Login (@Login)
-      - name: Run Only Login Feature Nightly
+      # 3. NIGHTLY / MANUAL: Ejecuta todos los escenarios programada cada dia a las 4:00 am
+      - name: Run All Scenarios Nightly
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
