@@ -27,10 +27,7 @@ public class Hooks {
         System.out.println("Modo de ejecución del navegador (Headless): " + runHeadless);
 
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions()
-                        .setHeadless(runHeadless)
-                        // Opcional: añade una pausa de 500ms entre acciones solo cuando ejecutes en local
-                        .setSlowMo(isCI ? 0 : 500)
+                new BrowserType.LaunchOptions().setHeadless(runHeadless).setSlowMo(isCI ? 0 : 500)
         );
         Page page = browser.newPage();
 
@@ -51,7 +48,7 @@ public class Hooks {
             playwrightThread.get().close();
         }
 
-        // Limpiar variables de hilo
+
         pageThread.remove();
         browserThread.remove();
         playwrightThread.remove();

@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
   schedule:
     # Todos los días a las 00:00 UTC (02:00 AM CEST España)
     - cron: '0 0 * * *'
@@ -34,10 +33,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Instalar navegadores de Playwright
-        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      # 1. PUSH: Solo ejecuta los escenarios marcados con @Smoke
+      - name: Instalar navegadores y dependencias de Playwright
+        run: npx playwright install --with-deps
+
+      # PUSH: Solo ejecuta los escenarios marcados con @Smoke
       - name: Run Smoke Tests on Push
         if: github.event_name == 'push'
         env:
@@ -49,7 +53,7 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 2. MERGE REQUEST (PR): Ejecuta los escenarios marcados con @Regression
+      # MERGE REQUEST (PR): Ejecuta los escenarios marcados con @Regression
       - name: Run Regression Tests on Pull Request
         if: github.event_name == 'pull_request'
         env:
@@ -61,7 +65,7 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 3. NIGHTLY / MANUAL: Ejecuta todos los escenarios programada cada dia a las 4:00 am
+      # NIGHTLY / MANUAL: Ejecuta todos los escenarios
       - name: Run All Scenarios Nightly
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
@@ -72,20 +76,20 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # Publicar reporte de resultados JUnit en GitHub Actions
+      # Publicar reporte JUnit con comodín más amplio
       - name: Publicar reporte de resultados JUnit
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
-          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          report_paths: '**/target/**/TEST-*.xml'
 
-      # Subir artefactos de prueba si hay evidencias
+      # Subir artefactos
       - name: Subir artefactos de prueba
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: target/surefire-reports/
+          path: '**/target/'
           retention-days: 30
 
   # ---------------------------------------------------------
