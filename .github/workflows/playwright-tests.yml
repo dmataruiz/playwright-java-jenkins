@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
   schedule:
     # Todos los días a las 00:00 UTC (02:00 AM CEST España)
     - cron: '0 0 * * *'
@@ -36,20 +35,20 @@ jobs:
 
       - name: Instalar navegadores de Playwright
         run: mvn exec:java -e "-Dexec.mainClass=com.microsoft.playwright.CLI" "-Dexec.args=install --with-deps"
-          
-          # PUSH: Solo ejecuta los escenarios marcados con @Smoke
-          - name: Run Smoke Tests on Push
-            if: github.event_name == 'push'
-            env:
-              QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
-            run: |
-              mvn clean test-compile test \
+
+      # PUSH: Solo ejecuta los escenarios marcados con @Smoke
+      - name: Run Smoke Tests on Push
+        if: github.event_name == 'push'
+        env:
+          QASE_API_KEY: ${{ secrets.QASE_API_KEY }}
+        run: |
+          mvn clean test-compile test \
             -Dcucumber.filter.tags="@Smoke" \
             -Dqase.mode=report \
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 2. MERGE REQUEST (PR): Ejecuta los escenarios marcados con @Regression
+      # MERGE REQUEST (PR): Ejecuta los escenarios marcados con @Regression
       - name: Run Regression Tests on Pull Request
         if: github.event_name == 'pull_request'
         env:
@@ -61,7 +60,7 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # 3. NIGHTLY / MANUAL: Ejecuta todos los escenarios programada cada dia a las 4:00 am
+      # NIGHTLY / MANUAL: Ejecuta todos los escenarios
       - name: Run All Scenarios Nightly
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
