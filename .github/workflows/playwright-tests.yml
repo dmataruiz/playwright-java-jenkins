@@ -72,20 +72,20 @@ jobs:
             -Dqase.config.testops.project=PP \
             -Dqase.config.testops.api.token=${{ secrets.QASE_API_KEY }}
 
-      # Publicar reporte de resultados JUnit en GitHub Actions
+      # Publicar reporte JUnit con comodín más amplio
       - name: Publicar reporte de resultados JUnit
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
-          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          report_paths: '**/target/**/TEST-*.xml'
 
-      # Subir artefactos de prueba si hay evidencias
+      # Subir artefactos
       - name: Subir artefactos de prueba
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: target/surefire-reports/
+          path: '**/target/'
           retention-days: 30
 
   # ---------------------------------------------------------
