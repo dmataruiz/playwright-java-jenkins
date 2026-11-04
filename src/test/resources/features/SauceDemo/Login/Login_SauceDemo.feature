@@ -1,4 +1,3 @@
-# language: es
 @Login
 Característica: Autenticación de usuarios en SauceDemo
   Como usuario de la plataforma SauceDemo

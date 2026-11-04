@@ -35,9 +35,9 @@ jobs:
           cache: maven
 
       - name: Instalar navegadores de Playwright
-        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps"
+        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
 
-      # 1. PUSH: Solo ejecuta los escenarios marcados con @Smoke
+      # PUSH: Solo ejecuta los escenarios marcados con @Smoke
       - name: Run Smoke Tests on Push
         if: github.event_name == 'push'
         env:

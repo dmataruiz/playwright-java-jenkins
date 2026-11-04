@@ -18,10 +18,7 @@ import org.testng.annotations.DataProvider;
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
 
-    /**
-     * Habilita la ejecución paralela de los escenarios de Gherkin con TestNG.
-     * Si no quieres ejecución en paralelo, elimina este método.
-     */
+
     @Override
     @DataProvider(parallel = false)
     public Object[][] scenarios() {
