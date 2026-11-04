@@ -33,10 +33,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Instalar navegadores de Playwright
-        run: |
-          mvn test-compile
-          mvn exec:java -e "-Dexec.mainClass=com.microsoft.playwright.CLI" "-Dexec.args=install --with-deps"
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar navegadores y dependencias de Playwright
+        run: npx playwright install --with-deps
 
       # PUSH: Solo ejecuta los escenarios marcados con @Smoke
       - name: Run Smoke Tests on Push
